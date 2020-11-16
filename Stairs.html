@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My first three.js app</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<div id="WebGL-output">
+</div>
+<body>
+<script type="text/javascript" src="three.js"></script>
+<script type="text/javascript" src="jquery-1.9.0.js"></script>
+<script src="TrackballControls.js"></script>
+<script type="text/javascript" src="stats.js"></script>
+<script type="text/javascript" src="dat.gui.js"></script>
+<script>
+    $(function () {
+        //constants
+        const HEIGHT = 15;
+        const STAIR_HEIGHT = 1;
+        const STAIR_WIDTH = 10;
+        const STAIR_DEPTH = 10;
+
+        const CYLINDER_HEIGHT = 4;
+        const CYLINDER_D = 0.2;
+
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        const scene = new THREE.Scene();
+
+        // create a camera, which defines where we're looking at.
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // create a render and set the size
+        const renderer = new THREE.WebGLRenderer();
+
+        renderer.setClearColor(0xEEEEEE, 1.0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMapEnabled = true;
+
+        // var axes = new THREE.AxesHelper(20);
+        // scene.add(axes);
+
+        // first floor
+        const firstFloorGeometry = new THREE.PlaneGeometry(45, 30);
+        const firstFloorMaterial = new THREE.MeshLambertMaterial({color: "#c3844c", side: THREE.DoubleSide});
+        const firstFloor = new THREE.Mesh(firstFloorGeometry, firstFloorMaterial);
+        firstFloor.receiveShadow = true;
+        firstFloor.rotation.x = -0.5 * Math.PI;
+        firstFloor.position.x = 0;
+        firstFloor.position.y = 0;
+        firstFloor.position.z = 0;
+        scene.add(firstFloor);
+
+        // second floor
+        // const secondFloorGeometry = new THREE.PlaneGeometry(20, 30);
+        // const secondFloorMaterial = new THREE.MeshLambertMaterial({color: 0xFFDAB9, side: THREE.DoubleSide});
+        // const secondFloor = new THREE.Mesh(secondFloorGeometry, secondFloorMaterial);
+        // secondFloor.receiveShadow = true;
+        // secondFloor.rotation.x = -0.5 * Math.PI;
+        // secondFloor.position.x = 10;
+        // secondFloor.position.y = HEIGHT;
+        // secondFloor.position.z = 0;
+        // secondFloorMaterial.opacity = 0.6;
+        // secondFloorMaterial.transparent = 0.6;
+        // scene.add(secondFloor);
+
+        const ambiColor = "#0c0c0c";
+        const ambientLight = new THREE.AmbientLight(ambiColor);
+        scene.add(ambientLight);
+        // add spotlight for a bit of light
+        const spotLight = new THREE.SpotLight(0xffffff);
+        spotLight.position.set(-40, 30, 0);
+        spotLight.castShadow = true;
+        scene.add(spotLight);
+
+        camera.position.x = -30;
+        camera.position.y = 70;
+        camera.position.z = 80;
+        camera.lookAt(scene.position);
+
+        $("#WebGL-output").append(renderer.domElement);
+
+        // const extrudeSettings = {
+        //     steps: 1,
+        //     depth: 1,
+        //     bevelEnabled: true,
+        //     bevelThickness: 0.25,
+        //     bevelSize: 0.2,
+        //     bevelSegments: 1,
+        // }
+        //
+        //
+        // var width = 10;
+        // var hight = 2;
+        // var depth = 25;
+
+        // var boxGeometry = new THREE.BoxGeometry(width, hight, depth);
+        // var boxMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
+
+        // stack of boxes
+        // for (i = 0; i < 5; i++) {
+        //     box = new THREE.Mesh(boxGeometry, boxMaterial);
+        //     box.castShadow = true;
+        //     box.position.y = (2.5 + i * 1.2) * hight;
+        //     // box.position.x = i * 5;
+        //     // box.position.z = i * 5;
+        //     box.rotation.y = Math.PI / 5 * i;
+        //     scene.add(box);
+        // }
+
+
+        // function drawLeftStep() {
+        //     shape = new THREE.Shape();
+        //     shape.moveTo(0, 0);
+        //     shape.lineTo(0, 2);
+        //     shape.lineTo(10, 10);
+        //     return shape;
+        // }
+
+        // leftStep = drawLeftStep();
+        // boxLeftGeometry = new THREE.ExtrudeGeometry(leftStep, extrudeSettings);
+        // box = new THREE.Mesh(boxLeftGeometry, boxMaterial);
+        // step = new THREE.Object3D();
+        // step.add(box);
+        // scene.add(step);
+        // track-ball camera controls
+        const camControls = new THREE.TrackballControls(camera, renderer.domElement);
+
+        let  length = 10, width = 10;
+
+        let  shape = new THREE.Shape();
+        shape.moveTo(0, 0);
+        shape.lineTo(0, width);
+        shape.lineTo(length, width);
+        shape.lineTo(length, 0);
+        shape.lineTo(0, 0);
+
+        let  extrudeSettings = {
+            steps: 1,
+            bevelEnabled: false,
+            bevelThickness: 10,
+            bevelSize: 1,
+            bevelOffset: 1,
+            bevelSegments: 0
+        };
+
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        render();
+
+        function render() {
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+            camControls.update();
+        }
+
+
+    });
+</script>
+</body>
+</html>
